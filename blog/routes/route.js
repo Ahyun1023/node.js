@@ -18,69 +18,52 @@ var signUp = function(req, res){
         "createdTime": createTime
     }
 
-    var password_check = req.body.password_check || req.query.password_check
+    var password_check = req.body.password_check || req.query.password_check;
 
     if(users.password != password_check){
         alert('잘못된 비밀번호입니다.');
     }
-    else{
-        var select_sql = 'SELECT * FROM users WHERE id=?;';
-        connection.query(select_sql, [users.id], function(err, results){
-            console.log(results[0].id);
-            if(err){
-                console.log("error ocurred", err);
-                res.send({
-                    "code": 400,
-                    "failed": "error ocurred"
-                })
-            }
-           
-            if(results[0].id.length > 0){
-                alert('동일한 아이디가 존재합니다.');
-            }
-            
-            else{
-                var select_sql2 = 'SELECT * FROM users WHERE email=?;';
-                connection.query(select_sql2, [users.email], function(err, results){
-                    if(err){
-                        console.log("error ocurred", err);
-                        res.send({
-                            "code": 400,
-                            "failed": "error ocurred"
-                        })
-                    }
 
-                    if(users.email == results[0].email){
-                            alert('동일한 이메일이 존재합니다.');
+    var select_sql = 'SELECT * FROM users;';
+    connection.query(select_sql, users, function(err, results){
+        if(err){
+            console.log(err);
+        }
+        else{
+            for(var i=0; i<results.length; i++){
+                if(users.id == results[i].id){
+                    alert('이미 존재하는 아이디입니다.');
+                    break;
+                }
+
+                else if(users.email == results[i].email){
+                    alert('이미 존재하는 이메일입니다.');
+                    break;
+                }
+
+                else{
+                    var insert_sql = 'INSERT INTO users SET ?';
+                    connection.query(insert_sql, users, function(err, results){
+                        if(err){
+                            console.log(err);
                         }
-
-                    else{
-                        var insert_sql = 'INSERT INTO users SET ?;';
-                        connection.query(insert_sql, users, function(err, results){
-                            if(err){
-                                console.log("error ocurred", err);
-                                res.send({
-                                    "code": 400,
-                                    "failed": "error ocurred"
-                                })
-                            }
-
-                            else{
-                                res.writeHead('200', {'Content-Type':'text/html;charset=utf-8'});
-                                res.write('<h1>회원가입 성공</h1>');
-                                res.write('<a href="../public/login.html">로그인 화면으로 이동</a>');
-                                res.end();
-                            }
-                        }) 
-                    }
-                })            
+                        else{
+                            res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+                            res.write('<h1>회원가입 성공</h1>');
+                            res.write('<p> id: ' + users.id +', name: ' + users.email+ '</p>');
+                            res.write('<a href="../public/login.html">로그인 화면으로 가기</a>');
+                            res.end();
+                        }
+                    })
+                    break;
+                }
             }
-        })
-        connection.end();
-    }
+        }
+    })
 }
+    
 
-var login = function(req, res){
+const login = function(req, res){
     console.log('로그인 실행됨');
 
     var users = {
