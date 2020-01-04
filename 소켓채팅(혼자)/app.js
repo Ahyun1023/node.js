@@ -38,9 +38,9 @@ io.sockets.on('connection', function(socket){
                 console.log(err);
             }
             else{
-                if(results == 0){
+                //if(results == 0){
                     if(results.length != 0){
-                        onUser.push(socket.name);
+                        //onUser.push(socket.name);
                         io.sockets.emit('update', {type: 'connect', name: 'SERVER', message: socket.name+'님이 접속하셨습니다.'});
                     }
                     else{
@@ -57,25 +57,24 @@ io.sockets.on('connection', function(socket){
                             io.sockets.emit('update', {type: 'connect', name: 'SERVER', message: '새로운 유저, '+socket.name+'님이 접속하셨습니다.'});
                         })
                     }
-                }
-                else{
-                    for(var i=0; i<onUser.length; i++){
-                        if(results[i].name == socket.name){
-                            searchUser++;
-                            break;
-                        }
-                        else{
-                            continue;
-                        }
-                    }
-                    console.log(searchUser);
-                    if(searchUser != 0){//만약 현재 접속하고 있는 사람과 똑같은 이름이 있을 경우
-                        io.sockets.emit('error');
-                        searchUser--;
-                    }
-                }
-            }
-            
+                //}
+                // else{
+                //     for(var i=0; i<onUser.length; i++){
+                //         if(results[i].name == socket.name){
+                //             searchUser++;
+                //             break;
+                //         }
+                //         else{
+                //             continue;
+                //         }
+                //     }
+                //     console.log(searchUser);
+                //     if(searchUser != 0){//만약 현재 접속하고 있는 사람과 똑같은 이름이 있을 경우
+                //         io.sockets.emit('error');
+                //         searchUser--;
+                //     }
+                // }
+            }  
         }) 
     })
 
@@ -92,14 +91,18 @@ io.sockets.on('connection', function(socket){
                 if(err){
                     console.log(err);
                 }
-                else if(results == 0){
+
+                let info = io.sockets.connected[other_name.socketId];
+                console.log(info);
+
+                if(results == 0){
                     io.to(socket.id).emit('update', {type: 'message', name:'SERVER', message: other_name + '이라는 이름이 존재하지 않습니다.'});
                 }
-                // else if(results[0].id != io){
-                //     io.to(socket.id).emit('update', {type: 'message', name:'SERVER', message: other_name + '님은 접속상태가 아닙니다.'});
-                // }
+                else if(!io.sockets.connected[other_name.socketId]){
+                    io.to(socket.id).emit('update', {type: 'message', name:'SERVER', message: other_name + '님은 접속상태가 아닙니다.'});
+                }
                 else{
-                    io.to(results[0].id).emit('update', data); //안됨 저번엔 됐는데..
+                    io.to(results[0].id).emit('update', data);
                 }
             })
         }
