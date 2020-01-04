@@ -31,7 +31,7 @@ io.sockets.on('connection', function(socket){
     socket.on('newUser', function(name){
         socket.name = name;
 
-        let sql = "SELECT name FROM users WHERE name='?'";
+        let sql = "SELECT name FROM users WHERE name=?";
 
         connection.query(sql, socket.name, function(err, results){
             if(err){
