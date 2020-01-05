@@ -4,14 +4,18 @@ var socket = io();
 socket.on('connect', function() {
   var name = prompt('반갑습니다! 이름을 입력해주세요', '');
 
-  /* 이름이 빈칸인 경우 */
-  if(!name) {
-    alert('이름을 입력해주세요');
-    location.reload(true);
-  }
+  // /* 이름이 빈칸인 경우 */
+  // if(!name) {
+ 
+  // }
 
   /* 서버에 새로운 유저가 왔다고 알림 */
   socket.emit('newUser', name);
+})
+
+socket.on('nullName', function(){
+  alert('이름을 입력해주세요');
+  location.reload(true);
 })
 
 socket.on('error', function(){
